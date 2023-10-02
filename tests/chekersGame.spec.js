@@ -3,10 +3,10 @@ const { test, expect } = require("@playwright/test");
 
 test("Checkers game", async ({ page }) => {
   await page.goto("https://www.gamesforthebrain.com/game/checkers/");
- 
+  await page.waitForSelector("#message");
+
   const header = await page.locator(".page h1").textContent();
 
-  
   const values = ["02", "22", "42", "62"];
   let previousRandomX = null;
 
@@ -63,12 +63,6 @@ test("Checkers game", async ({ page }) => {
   if (message === "Make a move.") {
   }
 
-
   await expect(page).toHaveTitle("Checkers - Games for the Brain");
   await expect(header).toEqual("Checkers");
-
 });
-
-
-
-
