@@ -66,3 +66,47 @@ test("Checkers game", async ({ page }) => {
   await expect(page).toHaveTitle("Checkers - Games for the Brain");
   await expect(header).toEqual("Checkers");
 });
+
+//
+// Test...
+//
+test("Checkers Game", async ({ page }) => {
+  // Test data
+  const actualMessage = "Select an orange piece to move.";
+  const moves = [
+    { from: "space62", to: "space53" },
+    { from: "space51", to: "space62" },
+    { from: "space53", to: "space44" },
+    { from: "space62", to: "space44" },
+    { from: "space42", to: "space53" },
+  ];
+  
+  await page.goto("https://www.gamesforthebrain.com/game/checkers/");
+  const message = await page.locator("#message").textContent();
+  const header = await page.locator(".page h1").textContent();
+
+  async function clickAndVerifyMove(from, to) {
+    await page.locator(`[name='${from}']`).click();
+    await page.locator(`[name='${to}']`).click();
+    await page.waitForTimeout(2000);
+    const move = await page.locator("#message").textContent();
+    await expect(move).toEqual("Make a move.");
+  }
+
+  
+  for (const move of moves) {
+    await clickAndVerifyMove(move.from, move.to);
+  }
+
+  const blueChip = await page.locator(`[src='me1.gif']`).count();
+
+  await page.locator('a:has-text("Restart...")').click();
+  await page.waitForTimeout(1500);
+  const messageRestart = await page.locator("#message").textContent();
+
+  await expect(page).toHaveTitle("Checkers - Games for the Brain");
+  await expect(header).toEqual("Checkers");
+  await expect(message).toEqual(actualMessage);
+  await expect(blueChip).toBeLessThan(12);
+  await expect(messageRestart).toEqual(actualMessage);
+});
